@@ -13,13 +13,18 @@ void ehir_debug_reset_bundle_parse_count(void) { ehir_bundle_parse_count = 0; }
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct ehir_string_object ehir_string_object;
-typedef struct { ehir_string_object *object; } ehir_string;
-extern size_t encore_str_size(ehir_string value);
-extern char *encore_str_data(ehir_string value);
-extern ehir_string encore_empty_str(void);
-extern ehir_string encore_from_owned_buffer(char *buffer, size_t len);
-
+/* The include path is supplied by Encore. The relative fallback also
+ * supports the .14 bootstrap and SDK sibling-directory development. */
+#if defined(__has_include)
+# if __has_include(<runtime_abi.h>)
+#  include <runtime_abi.h>
+# else
+#  include "../core/runtime_abi.h"
+# endif
+#else
+# include "../core/runtime_abi.h"
+#endif
+typedef encore_str ehir_string;
 /* Pure formatting must work while frontend output builders are suppressed. */
 ehir_string ehir_core_join_strings_parts(const ehir_string *parts, size_t count,
                                          ehir_string separator) {
