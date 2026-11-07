@@ -186,7 +186,10 @@ fn instruction(item: Instruction, names: Names) -> Instruction {
         Instruction::Yield(value) => {
             let mut cleanups = Vec[CallInstruction]::new()
             for cleanup in value.cleanups {
-                cleanups.push(CallInstruction { variable(cleanup.out, names), callable(cleanup.name, names), types(cleanup.generics, names), variables(cleanup.args, names), cleanup.is_unsafe })
+                cleanups.push(CallInstruction {
+                        variable(cleanup.out, names), callable(cleanup.name, names), types(cleanup.generics, names), variables(cleanup.args, names), cleanup.is_unsafe
+                    }
+                )
             }
             ret Instruction::Yield(YieldInstruction { variable(value.value, names), cleanups })
         }

@@ -683,16 +683,16 @@ fn write_FnDirective(writer: mut SnapshotWriter, value: frozen FnDirective) ->()
     write_bool(writer, value.is_extern)
     write_bool(writer, value.is_async)
 
-write_Option_Type(writer, value.generator_type)
-writer.depth -= 1_usize
+    write_Option_Type(writer, value.generator_type)
+    writer.depth -= 1_usize
 }
 
 fn read_FnDirective(reader: mut SnapshotReader) -> Result[FnDirective, str] {
     reader_enter(reader)?
     let value = FnDirective {
         read_str(reader)?, read_Vec_Type(reader)?, read_Vec_Parameter(reader)?, read_Type(reader)?, read_Vec_Block(reader)?, read_bool(reader)?, read_bool
-(reader)?, read_Option_Type
-(reader)?
+        (reader)?, read_Option_Type
+        (reader)?
     }
     reader.depth -= 1_usize
     ret Result::Ok(value)
@@ -869,8 +869,10 @@ fn write_Instruction(writer: mut SnapshotWriter, value: frozen Instruction) ->()
             write_u8(writer, 6_u8) write_AwaitInstruction(writer, item)
         }
 
-Yield(item) => { write_u8(writer, 7_u8) write_YieldInstruction(writer, item) }
-Store(item) => {
+        Yield(item) => {
+            write_u8(writer, 7_u8) write_YieldInstruction(writer, item)
+        }
+        Store(item) => {
             write_u8(writer, 8_u8) write_StoreInstruction(writer, item)
         }
         Load(item) => {
@@ -952,9 +954,9 @@ fn read_Instruction(reader: mut SnapshotReader) -> Result[Instruction, str] {
         5_u8 => Instruction::Call(read_CallInstruction(reader)?)
         6_u8 => Instruction::Await(read_AwaitInstruction(reader)?)
         7_u8 => Instruction::
-Yield(read_YieldInstruction(reader)?)
+        Yield(read_YieldInstruction(reader)?)
         8_u8 => Instruction::
-Store(read_StoreInstruction(reader)?)
+        Store(read_StoreInstruction(reader)?)
         9_u8 => Instruction::Load(read_LoadInstruction(reader)?)
         10_u8 => Instruction::GetField(read_GetFieldInstruction(reader)?)
         11_u8 => Instruction::SetField(read_SetFieldInstruction(reader)?)
@@ -1689,9 +1691,13 @@ fn read_Vec_Block(reader: mut SnapshotReader) -> Result[Vec[Block], str] {
 
 fn
 write_Vec_CallInstruction(writer: mut SnapshotWriter, value: frozen Vec[CallInstruction]) ->() {
-    if !writer_enter(writer) { ret() }
+    if !writer_enter(writer) {
+        ret()
+    }
     write_count(writer, value.len())
-    for item in value { write_CallInstruction(writer, item) }
+    for item in value {
+        write_CallInstruction(writer, item)
+    }
     writer.depth -= 1_usize
 }
 
@@ -1699,7 +1705,9 @@ fn read_Vec_CallInstruction(reader: mut SnapshotReader) -> Result[Vec[CallInstru
     reader_enter(reader)?
     let count = read_count(reader, 256_usize)?
     let mut value = Vec[CallInstruction]::with_capacity(count)
-    for _index in 0_usize..count { value.push(read_CallInstruction(reader)?) }
+    for _index in 0_usize..count {
+        value.push(read_CallInstruction(reader)?)
+    }
     reader.depth -= 1_usize
     ret Result::Ok(value)
 }
@@ -2013,9 +2021,10 @@ fn read_Vec_Variable(reader: mut SnapshotReader) -> Result[Vec[Variable], str] {
     ret Result::Ok(value)
 }
 
-
 fn write_YieldInstruction(writer: mut SnapshotWriter, value: frozen YieldInstruction) ->() {
-    if !writer_enter(writer) { ret() }
+    if !writer_enter(writer) {
+        ret()
+    }
     write_Variable(writer, value.value)
     write_Vec_CallInstruction(writer, value.cleanups)
     writer.depth -= 1_usize

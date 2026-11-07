@@ -428,7 +428,9 @@ fn mark_non_promotable_instruction_uses(set: mut StringSet, instruction: Instruc
         }
         Instruction::Yield(item) => {
             mark_name(set, item.value.name)
-            for cleanup in item.cleanups { mark_variables(set, cleanup.args) }
+            for cleanup in item.cleanups {
+                mark_variables(set, cleanup.args)
+            }
         }
         Instruction::Await(item) => {
             mark_name(set, item.future.name)

@@ -1183,9 +1183,15 @@ fn freeze_Instruction(context: mut TypedContext, item: Instruction) -> Result[Ty
         Instruction::Yield(item) => {
             let mut cleanups = Vec[TypedGeneratorCleanup]::new()
             for cleanup in item.cleanups {
-                cleanups.push(TypedGeneratorCleanup { intern_symbol(context, cleanup.name), intern_symbol(context, cleanup.out.name), intern_type(context, cleanup.out.typ), intern_types(context, cleanup.generics), freeze_operands(context, cleanup.args)?, cleanup.is_unsafe })
+                cleanups.push(TypedGeneratorCleanup {
+                        intern_symbol(context, cleanup.name), intern_symbol(context, cleanup.out.name), intern_type(context, cleanup.out.typ), intern_types(context, cleanup.generics), freeze_operands(context, cleanup.args)?, cleanup.is_unsafe
+                    }
+                )
             }
-            ret Result::Ok(TypedInstruction::Yield(TypedYieldInstruction { freeze_operand(context, item.value)?, cleanups }))
+            ret Result::Ok(TypedInstruction::Yield(TypedYieldInstruction {
+                        freeze_operand(context, item.value)?, cleanups
+                    }
+                ))
         }
         Instruction::Await(item) => {
             ret Result::Ok(TypedInstruction::Await(freeze_AwaitInstruction(context, item)?))
@@ -1283,9 +1289,15 @@ fn thaw_Instruction(function: TypedFunction, item: TypedInstruction) -> Result[I
         TypedInstruction::Yield(item) => {
             let mut cleanups = Vec[CallInstruction]::new()
             for cleanup in item.cleanups {
-                cleanups.push(CallInstruction { var(thaw_symbol(function, cleanup.output)?, thaw_type(function, cleanup.result_type)?), thaw_symbol(function, cleanup.name)?, thaw_types(function, cleanup.generics)?, thaw_operands(function, cleanup.arguments)?, cleanup.is_unsafe })
+                cleanups.push(CallInstruction {
+                        var(thaw_symbol(function, cleanup.output)?, thaw_type(function, cleanup.result_type)?), thaw_symbol(function, cleanup.name)?, thaw_types(function, cleanup.generics)?, thaw_operands(function, cleanup.arguments)?, cleanup.is_unsafe
+                    }
+                )
             }
-            ret Result::Ok(Instruction::Yield(YieldInstruction { thaw_operand(function, item.value)?, cleanups }))
+            ret Result::Ok(Instruction::Yield(YieldInstruction {
+                        thaw_operand(function, item.value)?, cleanups
+                    }
+                ))
         }
         TypedInstruction::Await(item) => {
             ret Result::Ok(Instruction::Await(thaw_AwaitInstruction(function, item)?))

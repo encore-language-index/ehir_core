@@ -832,8 +832,14 @@ pub fn instruction_to_string(instruction: Instruction) -> str {
         }
         Instruction::Yield(item) => {
             let mut cleanups = Vec[str]::new()
-            for cleanup in item.cleanups { cleanups.push(format_call_instruction(cleanup)) }
-            let suffix = if cleanups.is_empty() { "" } else { " cleanup [" + join_strings(cleanups, "; ") + "]" }
+            for cleanup in item.cleanups {
+                cleanups.push(format_call_instruction(cleanup))
+            }
+            let suffix = if cleanups.is_empty() {
+                ""
+            } else {
+                " cleanup [" + join_strings(cleanups, "; ") + "]"
+            }
             ret "yield " + variable_to_string(item.value) + suffix
         }
         Instruction::Await(await_instr) => {
@@ -966,7 +972,9 @@ pub fn fn_to_string(function: FnDirective) -> str {
             out = "async fn "
         }
     }
-    if function.generator_type.is_some() { out = "generator fn " }
+    if function.generator_type.is_some() {
+        out = "generator fn "
+    }
     out = out + function.name
     if function.generics.len() > 0_usize {
         out = out + "["
@@ -978,8 +986,11 @@ pub fn fn_to_string(function: FnDirective) -> str {
     out = out + ") -> "
     out = out + type_to_string(function.ret_type)
     match function.generator_type {
-        Some(generator) => { out = out + " => " + type_to_string(generator) }
-        None => {}
+        Some(generator) => {
+            out = out + " => " + type_to_string(generator)
+        }
+        None => {
+        }
     }
 
     if function.is_extern {

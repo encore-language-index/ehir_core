@@ -716,7 +716,9 @@ pub fn instruction_inputs(item: Instruction) -> Vec[Variable] {
         }
         Instruction::Yield(data) => {
             values.push(data.value)
-            for cleanup in data.cleanups { values.extend(cleanup.args) }
+            for cleanup in data.cleanups {
+                values.extend(cleanup.args)
+            }
         }
         Instruction::Await(data) => {
             values.push(data.future)
