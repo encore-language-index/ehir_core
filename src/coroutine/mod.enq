@@ -1891,7 +1891,7 @@ pub fn validate_generator_storage(module: Module, function: FnDirective) -> Opti
     ret Option[str]::None
 }
 
-fn generator_contains_stack(module: Module, typ: Type, seen: Vec[str]) -> bool {
+fn generator_contains_stack(module: frozen Module, typ: frozen Type, seen: Vec[str]) -> bool {
     if typ.representation == RepresentationKind::NodeStack || typ.representation == RepresentationKind::NodeAny { ret true }
     if typ.representation == RepresentationKind::Raw || typ.representation == RepresentationKind::LocalPlace { ret false }
     let key = mangle_type_name(typ)
@@ -1927,12 +1927,16 @@ fn generator_contains_stack(module: Module, typ: Type, seen: Vec[str]) -> bool {
     ret false
 }
 
-fn generator_specialize_type(typ: Type, parameters: Vec[Type], arguments: Vec[Type]) -> Type {
+fn generator_specialize_type(typ: frozen Type, parameters: frozen Vec[Type], arguments: frozen Vec[Type]) -> Type {
     let mut index = 0_usize
     for parameter in parameters {
         if typ.name == parameter.name && typ.generics.is_empty() {
             match arguments.get(index) {
-                Some(actual) => { ret if typ.representation == RepresentationKind::Inline { actual } else { Type { actual.name, actual.generics, typ.representation } } }
+                Some(actual) => {
+                    let mut copied = generator_copy_type(actual)
+                    if typ.representation != RepresentationKind::Inline { copied.representation = typ.representation }
+                    ret copied
+                }
                 None => {}
             }
         }
@@ -1940,5 +1944,11 @@ fn generator_specialize_type(typ: Type, parameters: Vec[Type], arguments: Vec[Ty
     }
     let mut generics = Vec[Type]::new()
     for argument in typ.generics { generics.push(generator_specialize_type(argument, parameters, arguments)) }
-    ret Type { typ.name, generics, typ.representation }
+    ret Type { "" + typ.name, generics, typ.representation }
+}
+
+fn generator_copy_type(typ: frozen Type) -> Type {
+    let mut generics = Vec[Type]::new()
+    for argument in typ.generics { generics.push(generator_copy_type(argument)) }
+    ret Type { "" + typ.name, generics, typ.representation }
 }
